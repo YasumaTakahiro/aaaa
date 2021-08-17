@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+アップロード
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">
+        アップロード
+    </a>
+</nav>
+<div class="container">
+    <h1 class="h5 my-4">PDFファイルアップロード</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="アップロード">
+    </form>
+</div>
+{% endblock %}

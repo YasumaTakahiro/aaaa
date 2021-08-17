@@ -1,0 +1,677 @@
+{% extends "layout_purchase_read.html" %}
+
+{% block title %}
+分類結果
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">
+        分類結果
+    </a>
+</nav>
+<div class="container">
+    <h1 class="h5 my-4">商品の分類結果を表示</h1>
+    <form id="form" action="{{url_for('register_confirm', file_name=file_name, template_file_name=template_file_name)}}" method="POST">
+        <table class="table table-hover table-responsive-md">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">商品名</th>
+                    <th scope="col"></th>
+                    <th scope="col">数量</th>
+                    <th scope="col">単位</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line_key, line_values in line_dic.items() %}
+                    <tr>
+                        <th id="line-{{ loop.index }}" scope="row">
+                            {{ loop.index }}
+                        </th>
+                        <td>
+                            <div class="form-group">
+                                <figure>
+                                    <img src="{{url_for('static', filename='images/trimming/item' + line_key + '.png')}}" class="border" width="575" height="50">
+                                </figure>
+                                <div id="text-box-{{ loop.index }}" class="search-area form-control mt-3">
+                                    <input id="search-box-{{ loop.index }}" class="search-input" type="text">
+                                    <div id="icon-{{ loop.index }}" class="search-icon">
+                                        <img src="{{url_for('static', filename='images/icon/search_icon.jpeg')}}">
+                                    </div>
+                                </div>
+                                <span id="validate-search-message-{{ loop.index }}"></span>
+                                <div id="result-box-{{ loop.index }}" class="form-group my-3">
+                                </div>
+                                <label for="select-item-{{ loop.index }}" class="h6">AI判定結果(リスト)</label>
+                                <select id="select-item-{{ loop.index }}" name="ai-item" class="form-control">
+                                    {% for item in line_values['item' + line_key] %}
+                                        {% if item.品番名 %}
+                                            <option value="{{ item.品番コード }}">{{item.品番コード}}_{{item.品番名}}_{{item.規格}}</option>
+                                        {% elif item == 'empty' %}
+                                            <option value="empty">{{ item }}</option>
+                                        {% else %}
+                                            <option value="{{ item }}">{{ item }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <span id="validate-message-{{ loop.index }}"></span>
+                            </div>
+                            <div id="db-check-{{ loop.index }}" class="form-group">
+                                {% if loop.index == 1 %}
+                                {% else %}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div id="search-switch-{{ loop.index }}" class="form-group">
+                                <input type="checkbox" data-toggle="toggle" data-onstyle="outline-success" data-offstyle="outline-danger" data-on="全検索ON" data-off="全検索OFF" data-size="normal">
+                            </div>
+                            <div class="check">
+                                <label><input type="radio" name="search-check-{{ loop.index }}" value="0" checked>全件検索結果非表示</label>
+                                <label><input type="radio" name="search-check-{{ loop.index }}" value="1">全件検索結果表示</label>
+                                <label><input type="radio" name="same-check-{{ loop.index }}" value="0" checked>同上検索結果非表示</label>
+                                <label><input type="radio" name="same-check-{{ loop.index }}" value="1">同上検索結果表示</label>
+                            </div>
+                        </td>
+                        <td>
+                            <figure>
+                                <img src="{{url_for('static', filename='images/trimming/count' + line_key + '.png')}}" class="border"  width="80" height="50">
+                            </figure>
+                            <div class="form-group">
+                                {% for count in line_values['count' + line_key] %}
+                                    <input id="count-{{ line_key | int }}" type="text" name="ai-count" class="form-control" value="{{ count }}">
+                                    <span></span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <figure>
+                                {% if line_values['unit'+ line_key] %}
+                                    <img src="{{url_for('static', filename='images/trimming/unit' + line_key + '.png')}}" class="border"  width="80" height="50">
+                                {% else %}
+                                    <img src="http://placehold.jp/80x50.png?text=画像なし" alt="">
+                                {% endif %}
+                            </figure>
+                            <div class="form-group">
+                                <select name="ai-unit" class="form-control">
+                                    {% if line_values['unit'+ line_key] %}
+                                        {% for unit in line_values['unit'+ line_key] %}
+                                            {% if unit == '本' %}
+                                                <option selected value="{{ unit }}">{{ unit }}</option>
+                                                <option value="個">個</option>
+                                                <option value="枚">枚</option>
+                                                <option value="empty">empty</option>
+                                            {% elif unit == '個' %}
+                                                <option value="本">本</option>
+                                                <option selected value="{{ unit }}">{{ unit }}</option>
+                                                <option value="枚">枚</option>
+                                                <option value="empty">empty</option>
+                                            {% elif unit == '枚' %}
+                                                <option value="本">本</option>
+                                                <option value="個">個</option>
+                                                <option selected value="{{ unit }}">{{ unit }}</option>
+                                                <option value="empty">empty</option>
+                                            {% elif unit == 'empty' %}
+                                                <option value="本">本</option>
+                                                <option value="個">個</option>
+                                                <option value="枚">枚</option>                               
+                                                <option selected value="{{ unit }}">{{ unit }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for count in line_values['count' + line_key] %}
+                                            <option selected value="本">本</option>
+                                            <option value="個">個</option>
+                                            <option value="枚">枚</option>
+                                            <option value="empty">empty</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success">登録確認画面へ</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js"></script>
+<script>
+    // 表示されていない各要素をイベント登録
+    $(document).on('click', '[id^=db-list-]', function () {
+    });
+    
+    $(document).on('click', '[id^=search-box-]', function () {
+    });
+    
+    $(document).on('click', '[id^=result-box-]', function () {
+    });
+
+    $(document).on('click', '[id^=text-box-]', function () {
+    });
+    
+    $(document).on('click', '[id^=search-switch-]', function () {
+    });
+
+    $(document).on('click', '[id^=icon-]', function () {
+    });
+
+    $(document).on('click', '[id^=db-check-]', function () {
+    });
+
+    // 点々問題の処理
+    $('[id^=select-item-]').on('click', function(e){
+        // console.log($(this, 'option:selected').val());
+        // console.log($(this).attr('id'));
+        var temp = $(this).attr('id');
+        var number = parseInt(temp.match(/\d{1,2}/));
+        // console.log(number);
+        // var select_val = $(this, 'option:selected').val();
+        var item_db_all_div = $('#result-box-' + String(number -1));
+        var item_db = $('#select-item-' + String(number - 1)).val();
+        var item_label = $('#select-item-' + String(number)).val();
+        var item_db_check = $('#db-list-' + String(number - 1)).val();
+        var item_db_all = $('#db-all-' + String(number -1)).val();
+
+        // 選択した行の1行上の検索ボックスなし
+        if (item_db_all_div.css('display') != 'block') {
+            if (number === 1) {
+                console.log('1番目の要素を変更しても、Ajax処理を実施しません');
+            } else if (item_label === 'empty') {
+                console.log('選択したリストはemptyのため、Ajax処理を実施しません')
+                // 同上検索結果のラジオボタン0へ変更する
+                $('input:radio[name=same-check-' + String(number) + ']').val(['0']);
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+            } else if (item_label.match(/\d{10}/)) {
+                console.log('データベースに登録されているため、Ajax処理を実施しません');
+                // 同上検索結果のラジオボタン0へ変更する
+                $('input:radio[name=same-check-' + String(number) + ']').val(['0']);
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+                // メッセージ削除
+                $('#result-message-' + String(number)).remove();
+            } else if (item_db_check === '検索結果はありません') {
+                //選択されたリストがデータベースに登録されていないかつ1行上の同上結果が存在しない
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+                console.log($('#select-item-' + String(number)).next());
+                e.preventDefault();
+                $.ajax({
+                    data: {
+                        select_change_number: number,
+                        item_label: item_label
+                    },
+                    type: 'POST',
+                    url: '/db_nothing_check',
+                    dataType: 'json',
+                })
+                .done(function(data) {
+                    console.log('(1行上に検索ボックスなし)検索結果が存在しないかつ選択したリストはデータベースに登録されていませんAjax通信成功');
+                    console.log(data);
+                    // 同上検索結果のラジオボタン1へ変更する
+                    $('input:radio[name=same-check-' + data.number + ']').val(['1']);
+                    // メッセージ削除
+                    $('#result-message-' + data.number).remove();
+                    $(data.db_check_area).html(data.db_no_html);
+                })
+                .fail(function(data) {
+                    console.log('(1行上に検索ボックスなし)検索結果が存在しないかつ選択したリストはデータベースに登録されていませんAjax通信失敗');
+                });
+            }
+            else {
+                // 選択したリストと1行上の「AI判定結果」のAjax処理
+                if (item_db.match(/\d{10}/) && !item_label.match(/\d{10}/)) {
+                    e.preventDefault();
+                    $.ajax({
+                        data: {
+                            select_change_number: number,
+                            item_code: item_db, 
+                            item_label: item_label,
+                        },
+                        type: 'POST',
+                        url: '/db_check',
+                        dataType: 'json',
+                    })
+                    .done(function(data) {
+                        console.log('選択したリストと1行上の「AI判定結果」が点々の関係の場合、Ajax通信成功');
+                        console.log(data);
+                        // 同上検索結果のラジオボタン1へ変更する
+                        $('input:radio[name=same-check-' + data.number + ']').val(['1']);
+                        // メッセージ削除
+                        $('#result-message-' + data.number).remove();
+                        $(data.db_check_area).html(data.db_check_html);
+                    })
+                    .fail(function() {
+                        console.log('選択したリストと1行上の「AI判定結果」が点々の関係の場合、Ajax通信失敗');
+                    });
+                // 選択リストと1行上の「同上検索結果」のAjax処理
+                } else if (item_db_check.match(/\d{10}/) && !item_label.match(/\d{10}/)) {
+                    e.preventDefault();
+                    $.ajax({
+                        data: {
+                            select_change_number: number,
+                            item_code: item_db_check, 
+                            item_label: item_label,
+                        },
+                        type: 'POST',
+                        url: '/db_check',
+                        dataType: 'json',
+                    })
+                    .done(function(data) {
+                        console.log(' 選択リストと1行上の「同上検索結果」のAjax通信成功');
+                        // 同上検索結果のラジオボタン1へ変更する
+                        $('input:radio[name=same-check-' + data.number + ']').val(['1']);
+                        console.log(data);
+                        $(data.db_check_area).html(data.db_check_html);
+                    })
+                    .fail(function() {
+                        console.log('選択リストと1行上の「同上検索結果」のAjax通信失敗');
+                    });
+                }
+            }
+        // 選択した行の1行上の検索ボックスありの場合
+        } else if (item_db_all_div.css('display') == 'block') {
+            if (item_label === 'empty') {
+                console.log('(1行上に検索ボックスあり)選択したリストはemptyのため、Ajax処理を実施しません');
+                // 同上検索結果のラジオボタン0へ変更する
+                $('input:radio[name=same-check-' + String(number) + ']').val(['0']);
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+                // メッセージ削除
+                $('#result-message-' + String(number)).remove();
+            } else if (item_label.match(/\d{10}/)) {
+                console.log('(1行上に検索ボックスあり)選択したリストはデータベースに登録されているため、Ajax処理を実施しません');
+                // 同上検索結果のラジオボタン0へ変更する
+                $('input:radio[name=same-check-' + String(number) + ']').val(['0']);
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+                // メッセージ削除
+                $('#result-message-' + String(number)).remove();
+            } else if (item_db_all === '検索結果はありません' && !item_label.match(/\d{10}/)) {
+                //1行上に検索ボックスあり)検索結果が存在しないかつデータベースに登録されていない
+                $('#db-list-' + String(number)).remove();
+                $('label[for=db-list-' + String(number) +']').remove();
+                console.log($('#select-item-' + String(number)).next());
+                e.preventDefault();
+                $.ajax({
+                    data: {
+                        select_change_number: number,
+                        item_label: item_label
+                    },
+                    type: 'POST',
+                    url: '/db_nothing_check',
+                    dataType: 'json',
+                })
+                .done(function(data) {
+                    console.log('(1行上に検索ボックスあり)検索結果が存在しないかつ選択したリストはデータベースに登録されていません。Ajax通信成功');
+                    console.log(data);
+                    // 同上検索結果のラジオボタン1へ変更する
+                    $('input:radio[name=same-check-' + data.number + ']').val(['1']);
+                    // メッセージ削除
+                    $('#result-message-' + data.number).remove();
+                    $(data.db_check_area).html(data.db_no_html);
+                })
+                .fail(function(data) {
+                    console.log('(1行上に検索ボックスあり)検索結果が存在しないかつ選択したリストはデータベースに登録されていません。Ajax通信失敗');
+                });
+            } else {
+                // 選択されたリストの1行上に検索結果が存在する場合
+                if (item_db_all.match(/\d{10}/) && !item_label.match(/\d{10}/)) {
+                    $('#db-list-' + String(number)).remove();
+                    $('label[for=db-list-' + String(number) +']').remove();
+                    e.preventDefault();
+                    $.ajax({
+                        data: {
+                            select_change_number: number,
+                            item_code: item_db_all, 
+                            item_label: item_label,
+                        },
+                        type: 'POST',
+                        url: '/db_check',
+                        dataType: 'json',
+                    })
+                    .done(function(data) {
+                        console.log('選択されたリストの1行上に検索結果が存在するAjax通信成功');
+                        console.log(data);
+                        // 同上検索結果のラジオボタン1へ変更する
+                        $('input:radio[name=same-check-' + data.number + ']').val(['1']);
+                        // メッセージ削除
+                        $('#result-message-' + data.number).remove();
+                        $(data.db_check_area).html(data.db_check_html);
+                    })
+                    .fail(function() {
+                        console.log('選択されたリストの1行上に検索結果が存在するAjax通信失敗');
+                    });
+                }
+            }
+        }
+    });
+
+    // 初期状態は検索テキストボックスと検索結果セレクトボックスは非表示
+    $('[id^=search-box-]').toggle();
+    $('[id^=result-box-]').toggle();
+    $('[id^=text-box-]').toggle();
+    
+    //全検索OFF/ONをクリック
+	$('[id^=search-switch-]').click(function() {
+        var temp = $(this).attr('id');
+        var number = parseInt(temp.match(/\d{1,2}/));
+        // console.log(number);
+        // console.log(temp);
+        // 検索テキストボックス表示
+        $('#text-box-' + String(number)).toggle();
+        $('#search-box-' + String(number)).toggle();
+        $('#result-box-' + String(number)).toggle();
+        // AI判定結果(リスト)を非表示
+        $('label[for=select-item-' + String(number) +']').toggle();
+        $('#select-item-' + String(number)).toggle();
+        // 同上検索結果(リスト)を非表示
+        $('label[for=db-list-' + String(number) +']').toggle();
+        $('#db-list-' + String(number)).toggle();
+        // ラジオボタン選択 0が全件検索結果非表示 1が全件検索結果表示
+        if ($('input:radio[name=search-check-' + String(number) + ']').prop('checked')) {
+            $('input:radio[name=search-check-' + String(number) + ']').val(['1']);
+        } else {
+            $('input:radio[name=search-check-' + String(number) + ']').val(['0']);
+        }
+        // 全検索ON/OFFバリデーションメッセージを非表示/表示
+        $('#validate-search-message-' + String(number)).toggle();
+        $('#validate-message-' + String(number)).toggle();
+        $('#validate-same-message-' + String(number)).toggle();
+	});
+
+    //　品番コード、品番名、規格の全検索処理
+    $('[id^=icon-]').on('click', function(e) {
+        var temp = $(this).attr('id');
+        var number = parseInt(temp.match(/\d{1,2}/));
+        var keywords = ($("#search-box-" + String(number)).val());
+
+        if (!keywords || !keywords.match(/\S/g)) {
+            console.log('キーワードが入力されていないためAjax処理を実装しません');
+        } else {
+            e.preventDefault();
+            $('#db-list-' + String(number)).remove();
+            $('label[for=db-list-' + String(number) +']').remove();
+            $.ajax({
+                data: {
+                    keywords: keywords,
+                    box_number : number
+                },
+                type: 'POST',
+                url: '/db_search_auto',
+                dataType: 'json',
+            })
+            .done(function(data) {
+                console.log('全件検索結果のAjax通信成功');
+                console.log(data);
+                $(data.db_all_area).html(data.db_all_html);
+            })
+            .fail(function() {
+                console.log('全件検索結果のAjax通信失敗');
+            });
+        }
+    });
+
+    //　品番コード、品番名、規格の全検索処理 全角対応完了
+    $('[id^=search-box-]').keypress(function(e) {
+        var temp = $(this).attr('id');
+        var number = parseInt(temp.match(/\d{1,2}/));
+        // console.log(temp);
+        // console.log(number);
+        if (e.which == 13) {
+            e.preventDefault();
+            $('#icon-' + String(number)).click();
+        }
+    });
+
+    //バリデーション
+    $(function() {
+        //エラークラス
+        const error_class = 'errors';
+        // エラーメッセージ
+        const item_message = '商品名を確認してください。';
+        const count_message = '数量を確認してください。';
+        const same_message = '同上検索を実施していませんので同上結果リストを確認してください。';
+        const search_message = 'キーワードが入力していないかまたは、検索を実施していません。';
+
+        // 正規表現
+        const item_check = '^[0-9]{10}';
+        const count_check = '^[1-9][0-9]*$';
+        
+        // 検索ボックスを除くバリデーション関数
+        function validate(attr, message, check) {
+            if (attr.val() == '') {
+                attr.addClass(error_class);
+                attr.next('span').text(message);
+                return false;
+            } else if (!attr.val().match(check)) {
+                attr.addClass(error_class);
+                attr.next('span').text(message);
+                return false;
+            } else {
+                attr.removeClass(error_class);
+                attr.next('span').text('');
+                return true;
+            }
+        }
+
+        // 検索ボックスのバリデーション関数
+        function validate_search(attr, message, search_box_number) {
+            if (attr.val() === '' && !($('#db-all-' + search_box_number).length)) {
+                $('#text-box-' + search_box_number).addClass(error_class);
+                $('#text-box-' + search_box_number).next('span').text(message);
+                return false;
+            } else if (attr.val() && !($('#db-all-' + search_box_number).length)) {
+                $('#text-box-' + search_box_number).addClass(error_class);
+                $('#text-box-' + search_box_number).next('span').text(message);
+                return false;
+            } else {
+                $('#text-box-' + search_box_number).removeClass(error_class);
+                $('#text-box-' + search_box_number).next('span').text('');
+                return true;
+            }
+        }
+
+        // バリデーションエラーの箇所へ移動
+        function validate_error_scroll(attr) {
+            var error_area = attr.offset().top;
+            $('html, body').animate({scrollTop:error_area});
+        }
+
+        //submitされた時のバリデーション
+        $('#form').submit(function(e) {
+            // e.preventDefault();
+            // エラー行数をカウント
+            var error_count = 0;
+            for (var i = 0; i < $('[name=ai-item]').length; i++) {
+                $('#select-item-' + String(i + 1)).removeClass(error_class);
+                $('#select-item-' + String(i + 1)).next('span').text('');
+                $('#count-' + String(i + 1)).removeClass(error_class);
+                $('#count-' + String(i + 1)).next('span').text('');
+                $('#text-box-' + String(i + 1)).removeClass(error_class);
+                $('#text-box-' + String(i + 1)).next('span').text('');
+                // 検索ボタン状態をチェック
+                // 検索ボックス非表示の場合
+                if ($('input:radio[name=search-check-' + String(i + 1) + ']:checked').val() === '0') {
+                    // 同上検索リスト非表示
+                    if ($('input:radio[name=same-check-' + String(i + 1) + ']:checked').val() === '0') {
+                        if ($('#select-item-' + String(i + 1)).val().match(/\d{10}/)) {
+                            // console.log(String(i + 1) + '行目 商品名OK');
+                            if (validate($('#select-item-' + String(i + 1)), item_message, item_check) && validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                console.log(String(i + 1) + '行目 AI判定リスト 商品名OK 数量OK');
+                            } else {
+                                console.log(String(i + 1) + '行目 AI判定リスト 商品名NG OR 数量NG');
+                                error_count++;
+                                if (error_count === 1) {
+                                    validate_error_scroll($('#line-' + String(i + 1)));
+                                }
+                            }
+                        } else if ($('#select-item-' + String(i + 1)).val() === 'empty') {
+                            if ($('#select-item-' + String(i + 1)).val() === 'empty' && ($('#count-' + String(i + 1)).val() === 'empty')) {
+                                console.log(String(i + 1) + '行目 AI判定リスト 商品名empty 数量empty');
+                            } else if (validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                validate($('#select-item-' + String(i + 1)), item_message, item_check);
+                                console.log(String(i + 1) + '行目 AI判定リスト 商品名NG 数量OK');
+                                error_count++;
+                                if (error_count === 1) {
+                                    validate_error_scroll($('#line-' + String(i + 1)));
+                                }
+                            } else {
+                                console.log(String(i + 1) + '行目 AI判定リスト 商品名NG 数量NG');
+                                error_count++;
+                                if (error_count === 1) {
+                                    validate_error_scroll($('#line-' + String(i + 1)));
+                                }
+                            }
+                        } else if (!($('#select-item-' + String(i + 1)).val().match(/\d{10}/))) {
+                            if (!(validate($('#select-item-' + String(i + 1)), same_message, item_check))) {
+                                // console.log(String(i + 1) + '行目 同上検索未実施');
+                                if (validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                    console.log(String(i + 1) + '行目 同上検索未実施 商品NG 数量OK');
+                                }　else {
+                                    console.log(String(i + 1) + '行目 同上検索未実施 商品NG 数量NG');
+                                }
+                                error_count++;
+                                    if (error_count === 1) {
+                                        validate_error_scroll($('#line-' + String(i + 1)));
+                                    }
+                            }　
+                        }
+                    // 同上検索リスト表示 
+                    } else if ($('input:radio[name=same-check-' + String(i + 1) + ']:checked').val() === '1') {
+                        // console.log(String(i + 1) + '行目 同上検索実施');
+                        if ($('#db-list-' + String(i + 1)).val().match(/\d{10}/)) {
+                            if (validate($('#db-list-' + String(i + 1)), item_message, item_check) && validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                    console.log(String(i + 1) + '行目 同上検索実施 商品OK 数量OK');
+                            } else {
+                                console.log(String(i + 1) + '行目 同上検索実施 商品NG OR 数量NG');
+                                error_count++;
+                                if (error_count === 1) {
+                                    validate_error_scroll($('#line-' + String(i + 1)));
+                                }
+                            }
+                        } else if ($('#db-list-' + String(i + 1)).val() === '検索結果はありません') {
+                            // console.log(String(i + 1) + '行目 同上検索実施 商品NG 検索結果なし');
+                            if (!(validate($('#db-list-' + String(i + 1)), item_message, item_check))) {
+                                if (validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                    console.log(String(i + 1) + '行目 同上検索実施 商品NG 数量OK');
+                                } else {
+                                    console.log(String(i + 1) + '行目 同上検索実施 商品NG 数量NG');
+                                }
+                                error_count++;
+                                if (error_count === 1) {
+                                    validate_error_scroll($('#line-' + String(i + 1)));
+                                }
+                            }
+                        }
+                    }
+                } else if ($('input:radio[name=search-check-' + String(i + 1) + ']:checked').val() === '1') {
+                    // 検索ボックス表示の場合
+                    // console.log('検索ボックス表示処理');
+                    if (!($('#db-all-' + String(i + 1)).length)) {
+                        // console.log(String(i + 1) + '行目 全検索');
+                        //falseの場合 エラーが発生した箇所へ移動する
+                        if (!(validate_search($('#search-box-' + String(i + 1)), search_message, String(i + 1)))) {
+                            console.log(String(i + 1) + '行目 全検索未実施');
+                            validate($('#count-' + String(i + 1)), count_message, count_check);
+                            error_count++;
+                            if (error_count === 1) {
+                                validate_error_scroll($('#line-' + String(i + 1)));
+                            }
+                        }
+                    }　else if ($('#db-all-' + String(i + 1)).val().match(/\d{10}/)) {
+                        if (validate($('#db-all-' + String(i + 1)), item_message, item_check) && validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                            console.log(String(i + 1) + '行目 全検索 商品OK 数量OK');
+                        } else {
+                            console.log(String(i + 1) + '行目 全検索 商品NG OR 数量NG');
+                            error_count++;
+                            if (error_count === 1) {
+                                validate_error_scroll($('#line-' + String(i + 1)));
+                            }                                       
+                        }
+                    } else if ($('#db-all-' + String(i + 1)).val() === '検索結果はありません') {
+                        if (!(validate($('#db-all-' + String(i + 1)), item_message, item_check))) {
+                            if (validate($('#count-' + String(i + 1)), count_message, count_check)) {
+                                console.log(String(i + 1) + '行目 全検索 商品NG 数量OK');
+                            } else {
+                                console.log(String(i + 1) + '行目 全検索 商品NG 数量NG');
+                            }
+                            error_count++;
+                            if (error_count === 1) {
+                                validate_error_scroll($('#line-' + String(i + 1)));     
+                            }
+                        }
+                    }
+                }
+            }
+            //エラーがあればsubmitを停止
+            console.log(error_count);
+            if (error_count > 0) {
+                return false;
+            }
+        });
+    });
+
+    // // 同上検索バリデーションエラー文言解除
+    $('[id^=db-check-]').on('click', function(e) {
+	    var temp = $(this).attr('id');
+        var number = parseInt(temp.match(/\d{1,2}/));
+        if ($('#select-item-' + String(number)).hasClass('errors')) {
+            $('#select-item-' + String(number)).removeClass('errors');
+            $('#select-item-' + String(number)).next('span').text('');  
+        }
+    });
+
+    // 数量のみバリデーション
+    $(function() {
+        function validate_count(attr, message, check) {
+            if (attr.val() == '') {
+                attr.addClass('errors');
+                attr.next('span').text(message);
+                return false;
+            } else if (attr.val() == 'empty') {
+                attr.removeClass('errors');
+                attr.next('span').text('');
+                return true;
+            } else if (!attr.val().match(check)) {
+                attr.addClass('errors');
+                attr.next('span').text(message);
+                return false;
+            } else {
+                attr.removeClass('errors');
+                attr.next('span').text('');
+                return true;
+            }
+        }
+
+        // 数量全角文字入力不可
+        $('[id^=count-]').on('keyup', function(e) {
+            if(e.keyCode === 9 || e.keyCode === 16) return;
+            this.value = this.value.replace(/[^0-9a-z]+/i,'');
+            var temp = $(this).attr('id');
+            var number = parseInt(temp.match(/\d{1,2}/));
+            validate_count($('#count-' + String(number)), '数量を確認してください。', '^[1-9][0-9]*$');
+        });
+        $('[id^=count-]').on('blur', function(e) {
+            if(e.keyCode === 9 || e.keyCode === 16) return;
+            this.value = this.value.replace(/[^0-9a-z]+/i,'');
+            var temp = $(this).attr('id');
+            var number = parseInt(temp.match(/\d{1,2}/));
+            validate_count($('#count-' + String(number)), '数量を確認してください。', '^[1-9][0-9]*$');
+        });
+    });
+    
+    // $(function(){
+    //     history.pushState(null, null, null); //ブラウザバック無効化
+    //     //ブラウザバックボタン押下時
+    //     $(window).on("popstate", function (event) {
+    //         history.pushState(null, null, null);
+    //         window.alert('前のページに戻る場合、前に戻るボタンから戻ってください。');
+    //     });
+    // });
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/typeahead.css">
+    </head>
+    <body>
+
+    <div class="container">
+        {%for deli in deli_des %}
+          <p>{{ loop.index }}:{{ deli.納入先コード }}_{{ deli.納入先正式名 }}_{{ deli.住所1 }}</p>
+        {% endfor %}
+    </div>
+    </body>
+</html>

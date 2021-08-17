@@ -1,0 +1,14 @@
+.vscode/
+__pycache__/
+classfication_files/
+poppler/
+read_csv_files/
+output_csv_files/
+static/images/img_template_search/
+static/images/pdf_change_pngs/
+static/images/png_positon_move/
+static/images/template_xml_img/
+static/images/trimming/
+static/pdf_uploads/
+static/template_xml/
+log-avhash-search-output.html

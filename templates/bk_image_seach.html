@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+類似画像検索
+{% endblock%}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">
+        類似画像検索
+    </a>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col w-50">
+            <div class="sticky-top text-center pt-2">
+                <h1 class="h5">元画像</h1>
+                <img src="{{url_for('static', filename='images/pdf_change_pngs/' + file_name )}}" class="d-block mx-auto" style="width:390px">
+            </div>
+        </div>
+        <div class="col w-50">
+            <h5 class="text-center pt-2">類似画像検索結果</h5>
+            {% for similar_list in similar_lists %}
+                <div class="card-deck py-2">
+                    <div class="card">
+                        <img src="{{url_for('static', filename='images/img_template_search/' + similar_list[1] )}}" class="d-block mx-auto" style="width:390px">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ (1- similar_list[0]) * 100 }}% : {{similar_list[1]}}</h5>
+                            <a href="{{ url_for('image_redline', file_name=file_name, template_file_name=similar_list[1] )}}" class="btn btn-primary">
+                                座標ボタン
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

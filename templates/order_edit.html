@@ -1,0 +1,207 @@
+{% extends "layout_order_edit.html" %}
+
+{% block title %}
+CSV編集
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">
+        CSV編集
+    </a>
+</nav>
+<div class="container">
+    <h1 class="h5 my-4">CSV編集画面</h1>
+    <form action="{{ url_for('order_update', order_id=order.id) }}" method="POST" autocomplete="off">
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">受注日</label>
+            <div class="col-sm-2">
+                <input type="text" name="order_date" class="form-control" placeholder="受注日" value="{{ order.受注日.strftime('%Y/%m/%d') }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">出荷日</label>
+            <div class="col-sm-2">
+                <input type="text" name="shipping_date" class="form-control" placeholder="出荷日" value="{{ order.ヘッダ出荷日 }}"> 
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">納期</label>
+            <div class="col-sm-2">
+                <input type="text" name="due_date" class="form-control" placeholder="納期" value="{{ order.ヘッダ納期 }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">得意先</label>
+            <div class="col-sm-2">
+                <input type="text" name="customer" id="customer-id" class="form-control" placeholder="得意先コード" value="{{ order.得意先コード }}" readonly>
+            </div>
+            <div class="col-sm-4">
+                <input type="text" id="customer-name" class="form-control" placeholder="得意先正式名" value="{{ customer.得意先正式名 }}" disabled="disabled">
+            </div>
+            <div class="col-sm-5">
+                <input type="text" id="customer-search" class="form-control" placeholder="得意先 検索">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label"></label>
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-4">
+            </div>
+            <div id="db-result-customer-area" class="col-sm-5">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">担当者</label>
+            <div class="col-sm-2">
+                <input type="text" id="rep-number" name="rep" class="form-control" placeholder="担当者" value="{{ order.担当者コード }}" readonly>
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">納入先</label>
+            <div class="col-sm-2">
+                <input type="text" id="delivery-destination-id" name="delivery_destination" class="form-control" placeholder="納入先" value="{{ order.納入先コード }}">
+            </div>
+            <div class="col-sm-4">
+                <input type="text" id="delivery-destination-name" class="form-control" placeholder="納入先正式名" disabled="disabled">
+            </div>
+            <div class="col-sm-5">
+                <input type="text" id="delivery-destination-search" class="form-control" placeholder="納入先 検索" >
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label"></label>
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-4">
+            </div>
+            <div id="db-result-delivery-des-area" class="col-sm-5">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">仕入先</label>
+            <div class="col-sm-2">
+                <input type="text" name="supplier" class="form-control" placeholder="仕入先" value="{{ order.仕入先コード }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">配送業者</label>
+            <div class="col-sm-2">
+                <input type="text" name="delivery_company" class="form-control" placeholder="配送業者" value="{{ order.配送業者コード }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">時間</label>
+            <div class="col-sm-2">
+                <input type="text" name="time" class="form-control" placeholder="時間" value="{{ order.時間 }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">伝票摘要</label>
+            <div class="col-sm-2">
+                <input type="text" name="slip_memo" class="form-control" placeholder="伝票摘要" value="{{ order.伝票摘要コード }}">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">注文番号</label>
+            <div class="col-sm-2">
+                <input type="text" name="order_number" class="form-control" placeholder="注文番号">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">社内摘要</label>
+            <div class="col-sm-2">
+                <input type="text" name="in_company_memo" class="form-control" placeholder="社内摘要">
+            </div>
+            <div class="col-sm-9">
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">明細行番号</th>
+                    <th scope="col">受注区分</th>
+                    <th scope="col">倉庫コード</th>
+                    <th scope="col">商品コード</th>
+                    <th scope="col">AI判定リスト</th>
+                    <th scope="col">数量</th>
+                    <th scope="col">明細摘要</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order_detail in order_details %}
+                <tr>
+                    <th scope="row">{{ order_detail.明細行番号 }}</th>
+                    <td>
+                        <select name="order_kubun" class="form-control">
+                            {% if order_detail.明細受注区分 == 1 %}
+                                <option value="1" selected>1:倉出受注</option>
+                                <option value="2">2:受発注</option>
+                            {% elif order_detail.明細受注区分 == 2 %}
+                                <option value="1">1:倉出受注</option>
+                                <option value="2" selected>2:受発注</option>
+                            {% else %}
+                                <option>倉出受注か受発注か選択</option>
+                                <option value="1">1:倉出受注</option>
+                                <option value="2">2:受発注</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td></td>
+                    <td class='item-code-area'>
+                        {% if order_detail.商品コード %}
+                            <input type="text" id="item-code-{{ loop.index }}" name="item_code" class="form-control" value="{{ order_products[loop.index0].品番コード }}_{{ order_products[loop.index0].品番名 }}_{{ order_products[loop.index0].規格 }}">
+                        {% else %}
+                            <input type="text" id="item-code-{{ loop.index }}" name="item_code" class="form-control">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <select id="select-item-{{ loop.index }}" class="form-control">
+                            {% for order_ai_item in order_ai_item_lists[loop.index0] %}
+                                {% if order_ai_item.品番コード %}
+                                    <option value="{{ order_ai_item.品番コード }}">{{ order_ai_item.品番コード }}_{{ order_ai_item.品番名 }}_{{ order_ai_item.規格 }}</option>
+                                {% elif order_ai_item == 'empty' %}
+                                    <option value="empty">empty</option>
+                                {% elif order_ai_item == '' %}
+                                {% else %}
+                                    <option value="{{ order_ai_item }}">{{ order_ai_item }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="item-count-area">
+                        <input type="text" name="item_count" class="form-control" value="{{ order_detail.内訳数量 }}">
+                    </td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-success">CSV出力</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="{{ url_for('static', filename='/js/dot_equal.js')}}"></script>
+<script src="{{ url_for('static', filename='/js/customer_search.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/rep_search.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/delivery_destination_search.js') }}"></script>
+{% endblock %}

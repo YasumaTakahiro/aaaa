@@ -1,0 +1,47 @@
+{% extends "layout_image_search.html" %}
+
+{% block title %}
+類似画像検索
+{% endblock%}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">
+        類似画像検索
+    </a>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col w-50">
+            <div class="sticky-top text-center pt-2">
+                <h1 class="h5">元画像</h1>
+                {% if src_width > src_height %}
+                    <img src="{{url_for('static', filename='images/pdf_change_pngs/' + file_name )}}" class="d-block mx-auto" style="width:850px">
+                {% else %}
+                    <img src="{{url_for('static', filename='images/pdf_change_pngs/' + file_name )}}" class="d-block mx-auto" style="height:850px; width:700px">
+                {% endif %}
+            </div>
+        </div>
+        <div class="col w-50">
+            <h5 class="text-center pt-2">類似画像検索結果</h5>
+            {% for similar_list in similar_lists %}
+                <div class="card-deck py-2">
+                    <div class="card">
+                        {% if similar_list[2] > similar_list[3] %}    
+                            <img src="{{url_for('static', filename='images/img_template_search/' + similar_list[1] )}}" class="d-block mx-auto" style="width:850px">
+                        {% else %}
+                            <img src="{{url_for('static', filename='images/img_template_search/' + similar_list[1] )}}" class="d-block mx-auto" style="height:850px; width:700px">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ (1- similar_list[0]) * 100 }}% : {{similar_list[1]}}</h5>
+                            <a href="{{ url_for('order_create', file_name=file_name, template_file_name=similar_list[1] )}}" class="btn btn-primary">
+                                分類開始ボタン
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
